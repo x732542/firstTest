@@ -30,13 +30,16 @@ const info = {
   },
   js: {
     target: document.getElementById("container-js"),
-    url: "https://mozilla.org",
+    url: "https://javascript.info",
     color: "#D4AC0D",
     bgClass: "bg-js-theme",
     text: `<div class="tech-card text-start">
         <h3 style="color: #D4AC0D; border-bottom: 2px solid #D4AC0D; padding-bottom: 10px;"><i class="bi bi-cpu"></i> JavaScript (ECMAScript)</h3>
         <p class="mt-3" style="font-size: 1.1rem; line-height: 1.8;"><strong>JavaScript</strong> 是網頁的大腦邏輯。負責處理互動、計算，賦予網頁生命力。</p>
       </div>`,
+    customClick(e) {
+      showJsModal();
+    },
   },
 };
 
@@ -46,7 +49,6 @@ function initHover() {
     const item = info[lang];
     if (!item.target) return;
 
-    // mouseenter / mouseleave 不冒泡，移動到子元素不會誤觸，直接掛容器即可
     item.target.addEventListener("mouseenter", () => {
       body.classList.add(item.bgClass);
       if (item.spectrum) body.classList.add(item.spectrum);
@@ -67,9 +69,61 @@ function initHover() {
 
     item.target.addEventListener("click", (e) => {
       createRipple(e, item.color);
-      window.open(item.url, "_blank");
+      if (item.customClick) {
+        item.customClick(e);
+      } else {
+        window.open(item.url, "_blank");
+      }
     });
   });
+
+  // JS 自訂 modal 按鈕
+  document.getElementById("js-modal-yes").addEventListener("click", () => {
+    closeJsModal();
+    window.open(info.js.url, "_blank");
+  });
+
+  document.getElementById("js-modal-no").addEventListener("click", () => {
+    closeJsModal();
+    jsDeclineInteraction();
+  });
+}
+
+// JS 自訂 modal 控制
+function showJsModal() {
+  document.getElementById("js-confirm-modal").classList.add("active");
+}
+
+function closeJsModal() {
+  document.getElementById("js-confirm-modal").classList.remove("active");
+}
+
+// JS 拒絕跳轉後的互動效果
+let declineCount = 0;
+
+function jsDeclineInteraction() {
+  declineCount++;
+  const jsImg = document.getElementById("JSimg");
+
+  // Logo 旋轉彈跳
+  jsImg.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+  jsImg.style.transform = "rotate(360deg) scale(1.3)";
+  setTimeout(() => {
+    jsImg.style.transform = "";
+  }, 500);
+
+  // 文字框顯示動態訊息
+  const messages = [
+    `你拒絕了！但 <strong>JavaScript</strong> 已偷偷執行了一個事件 👾`,
+    `第 ${declineCount} 次拒絕⋯ <strong>console.log("還是留下來吧！")</strong>`,
+    `再拒絕試試？<strong>JS</strong> 正在悄悄監聽你的每一個動作 🕵️`,
+    `<strong>declineCount = ${declineCount}</strong>，這也是 JS！變數正在即時更新 🚀`,
+  ];
+  const msg = messages[Math.min(declineCount - 1, messages.length - 1)];
+
+  textC.innerHTML = `<div class='tech-card text-start' style='color:#D4AC0D'>${msg}</div>`;
+  textC.style.color = "#D4AC0D";
+  textC.classList.add("text-active", "text-js-active");
 }
 
 // 漣漪點擊效果
