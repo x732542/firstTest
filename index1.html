@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>前端新手導覽手冊</title>
-    <!-- <link href="https://jsdelivr.net" rel="stylesheet"> 很慢-->
+    <!-- 引入 Bootstrap 5 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,50 +12,16 @@
       crossorigin="anonymous"
     />
     <style>
-      header {
-        padding: 20px;
-        font-size: 15px;
-        border: black solid 5px;
-        border-radius: 10px;
-        text-align: center;
-        background-color: orange;
-      }
-      #textC {
-        font-size: 30px;
-        border: black solid 5px;
-      }
-      /* HTML 主題：橘色網格 (結構) */
-      .bg-html-theme {
-        background-color: #fff5f2;
-        background-image: radial-gradient(#e34c2622 1px, transparent 1px);
-        background-size: 20px 20px;
-      }
-
-      /* CSS 主題：藍色漸層 (美學) */
-      .bg-css-theme {
-        background-color: #f0f4ff;
-        background: linear-gradient(135deg, #f0f4ff 0%, #d9e2ff 100%);
-      }
-
-      /* JS 主題：黃色光芒 (邏輯) */
-      .bg-js-theme {
-        background-color: #fffdf0;
-        box-shadow: inset 0 0 100px rgba(247, 223, 30, 0.1);
-      }
-
-      /* 讓文字切換更平滑 */
-      #textC {
-        transition: all 0.3s ease;
-        min-height: 1.5em; /* 防止文字跳動 */
-      }
+      /* 基礎背景設定 */
       body {
-        transition: background-color 0.5s ease;
+        transition: background-color 0.8s ease;
+        background-color: #ffffff;
         min-height: 100vh;
+        overflow-x: hidden;
         position: relative;
-        z-index: 0;
       }
 
-      /* 建立一個全螢幕的光譜背景層 */
+      /* 七彩漸層層 (修正動畫跑掉問題：首尾顏色需相同) */
       body::before {
         content: "";
         position: fixed;
@@ -64,117 +30,192 @@
         width: 100%;
         height: 100%;
         z-index: -1;
-        opacity: 0; /* 預設透明 */
-        transition: opacity 5s ease; /* 0.5秒漸變 */
-        pointer-events: none;
-      }
-
-      /* CSS 光譜樣式 (依照可見光譜色序：紅橙黃綠藍靛紫) */
-      .bg-css-spectrum::before {
-        opacity: 1; /* 觸發時變清晰 */
+        opacity: 0;
         background: linear-gradient(
-          to right,
-          rgba(255, 0, 0, 0.1),
-          rgba(255, 165, 0, 0.1),
-          rgba(255, 255, 0, 0.1),
-          rgba(0, 128, 0, 0.1),
-          rgba(0, 0, 255, 0.1),
-          rgba(75, 0, 130, 0.1),
-          rgba(238, 130, 238, 0.1)
+          45deg,
+          #ff0000 0%,
+          /* 紅 */ #ff8800 14%,
+          /* 橙 */ #ffff00 28%,
+          /* 黃 */ #00ff00 42%,
+          /* 綠 */ #00ffff 56%,
+          /* 青 */ #0000ff 70%,
+          /* 藍 */ #ff00ff 84%,
+          /* 紫 */ #ff0000 100% /* 回到紅 (銜接點) */
         );
+        background-size: 200% 200%;
+        transition: opacity 0.6s ease-in-out;
       }
 
-      /* 為了讓光譜清晰，給予一個淡淡的底色 */
-      .bg-css-theme {
-        background-color: #f0f4ff;
+      /* 觸發 CSS 專屬光譜 */
+      .bg-css-spectrum::before {
+        opacity: 0.7;
+        animation: rainbowMove 4s linear infinite;
+      }
+
+      @keyframes rainbowMove {
+        0% {
+          background-position: 0% 0%;
+        }
+        100% {
+          background-position: 200% 200%;
+        }
+      }
+
+      /* HTML & JS 基礎背景 */
+      .bg-html-theme {
+        background-color: #fff5f2;
+        background-image: radial-gradient(#e34c2622 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .bg-js-theme {
+        background-color: #fffdf0;
+        box-shadow: inset 0 0 100px rgba(247, 223, 30, 0.1);
+      }
+
+      /* Header 樣式 */
+      header {
+        padding: 25px;
+        border: black solid 5px;
+        border-radius: 15px;
+        text-align: center;
+        background-color: orange;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 圖片容器聯動優化 */
+      .img-container {
+        padding: 20px;
+        border-radius: 25px;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+      }
+
+      .img-container:hover {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        transform: translateY(-15px) scale(1.05);
+      }
+
+      .img-container img {
+        transition: transform 0.5s ease;
+        max-height: 150px;
+        object-fit: contain;
+      }
+
+      /* 文字介紹框樣式 */
+      #textC {
+        font-size: 28px;
+        font-weight: bold;
+        border: black solid 5px;
+        border-radius: 20px;
+        padding: 30px;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s ease;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      }
+
+      .text-active {
+        transform: scale(1.03);
+        border-color: currentColor !important;
+      }
+
+      main {
+        padding: 20px;
+        border-radius: 30px;
       }
     </style>
   </head>
   <body class="container">
     <header>
-      <div>
-        <h1>前端語言：從零到一的抽象具象化</h1>
-      </div>
+      <h1>前端語言：從零到一的抽象具象化</h1>
     </header>
-    <main>
-      <div class="row text-center">
-        <div class="col-4">
-          <img id="HTMLimg" src="./img/html.png" alt="HTML" />
+
+    <main class="mt-5">
+      <!-- 圖片按鈕區 -->
+      <div class="row text-center gy-4 justify-content-center">
+        <div class="col-4 img-container" id="container-html">
+          <img id="HTMLimg" src="./img/html.png" alt="HTML" class="img-fluid" />
         </div>
-        <div class="col-4">
-          <img id="CSSimg" src="./img/CSS.png" alt="CSS" />
+        <div class="col-4 img-container" id="container-css">
+          <img id="CSSimg" src="./img/CSS.png" alt="CSS" class="img-fluid" />
         </div>
-        <div class="col-4">
-          <img id="JSimg" src="./img/JS.jpg" alt="JS" />
+        <div class="col-4 img-container" id="container-js">
+          <img id="JSimg" src="./img/JS.jpg" alt="JS" class="img-fluid" />
         </div>
       </div>
-      <div>
-        <p id="textC">1</p>
+
+      <!-- 文字顯示區 -->
+      <div class="row mt-5 justify-content-center">
+        <div class="col-10 col-md-9">
+          <div id="textC">請將滑鼠移至圖片上開始學習</div>
+        </div>
       </div>
     </main>
 
-    <!-- JS最後讀取 -->
     <script>
-      // 1. 取得 DOM 元素
       const body = document.body;
       const textC = document.getElementById("textC");
-      const elements = {
-        html: document.getElementById("HTMLimg"),
-        css: document.getElementById("CSSimg"),
-        js: document.getElementById("JSimg"), // 注意：你 HTML 裡的 id 是 JSimg
-      };
 
-      // 2. 定義內容資料庫
+      // 定義各語言內容
       const info = {
         html: {
-          text: "HTML：網頁的「骨架」，負責定義內容與標籤結構。",
+          target: document.getElementById("container-html"),
+          text: "HTML：網頁的「骨架」，負責定義標籤結構與內容意義。",
           color: "#E34C26",
           bgClass: "bg-html-theme",
         },
         css: {
-          text: "CSS：網頁的「外衣」，如同光譜般豐富，定義了色彩與美學。",
-          color: "#264DE4",
+          target: document.getElementById("container-css"),
+          text: "CSS：網頁的「外衣」，如同七彩光譜定義美感與佈局。",
+          color: "#0056b3",
           bgClass: "bg-css-theme",
-          spectrumClass: "bg-css-spectrum", // 新增一個控制光譜的類別
+          spectrum: "bg-css-spectrum",
         },
         js: {
-          text: "JavaScript：網頁的「大腦」，負責互動邏輯與動態行為。",
-          color: "#F7DF1E",
+          target: document.getElementById("container-js"),
+          text: "JavaScript：網頁的「大腦」，賦予物件互動與邏輯行為。",
+          color: "#D4AC0D",
           bgClass: "bg-js-theme",
         },
       };
 
-      // 3. 綁定事件函式
-      function setupHover(lang) {
-        const target = elements[lang];
-        if (!target) return;
+      // 封裝 Hover 邏輯
+      function initHover() {
+        Object.keys(info).forEach((lang) => {
+          const item = info[lang];
 
-        target.addEventListener("mouseenter", () => {
-          body.classList.add(info[lang].bgClass);
-          if (info[lang].spectrumClass) {
-            body.classList.add(info[lang].spectrumClass);
-          }
-          textC.innerText = info[lang].text;
-          textC.style.color = info[lang].color;
-          target.style.transform = "scale(1.1)";
-        });
+          item.target.addEventListener("mouseenter", () => {
+            // 切換背景
+            body.classList.add(item.bgClass);
+            if (item.spectrum) body.classList.add(item.spectrum);
 
-        target.addEventListener("mouseleave", () => {
-          body.classList.remove(info[lang].bgClass);
-          if (info[lang].spectrumClass) {
-            body.classList.remove(info[lang].spectrumClass);
-          }
-          textC.innerText = "請點擊上方圖片開始複習";
-          textC.style.color = "black";
-          target.style.transform = "scale(1)";
+            // 更新文字框
+            textC.innerText = item.text;
+            textC.style.color = item.color;
+            textC.classList.add("text-active");
+          });
+
+          item.target.addEventListener("mouseleave", () => {
+            // 移除所有相關類別
+            body.classList.remove(item.bgClass);
+            if (item.spectrum) body.classList.remove(item.spectrum);
+
+            // 恢復預設文字
+            textC.innerText = "請將滑鼠移至圖片上開始學習";
+            textC.style.color = "black";
+            textC.classList.remove("text-active");
+          });
         });
       }
 
-      // 4. 初始化所有圖片的監聽
-      setupHover("html");
-      setupHover("css");
-      setupHover("js");
+      // 啟動程式
+      window.onload = initHover;
     </script>
-    <script src="script.js"></script>
   </body>
 </html>
