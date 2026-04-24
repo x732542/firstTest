@@ -40,7 +40,7 @@ body::before {
     #ff0000 100%
   );
   background-size: 200% 200%;
-  transition: opacity 0.6s ease-in-out;
+  transition: opacity 0.4s ease-in-out;
 }
 
 .bg-css-spectrum::before {
@@ -58,21 +58,43 @@ body::before {
 }
 
 /* 3. 語言特性背景 */
+
+/* 背景圖案層：用 body::after 統一管理，避免與流星畫布及 body 動畫衝突 */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+body.bg-html-theme::after {
+  opacity: 1;
+  background-image:
+    linear-gradient(rgba(227, 76, 38, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(227, 76, 38, 0.18) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+body.bg-js-theme::after {
+  opacity: 1;
+  background-image:
+    linear-gradient(rgba(212, 172, 13, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 172, 13, 0.12) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
 .bg-html-theme {
   background-color: #fff5f2;
-  background-image:
-    linear-gradient(#e34c2630 2px, transparent 2px),
-    linear-gradient(90deg, #e34c2630 2px, transparent 2px);
-  background-size: 30px 30px;
-  background-position: center center;
 }
 
 .bg-js-theme {
   background-color: #fffdf0;
-  background-image:
-    linear-gradient(rgba(212, 172, 13, 0.05) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(212, 172, 13, 0.05) 2px, transparent 2px);
-  background-size: 100px 100px;
 }
 
 /* 4. 標題樣式 (修正置中與漂浮) */
@@ -94,6 +116,7 @@ header:hover {
   background-color: #ff8c00;
   transform: scale(1.05) rotate(-1deg);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  animation-play-state: paused;
 }
 
 header h1 {
@@ -103,18 +126,50 @@ header h1 {
 }
 
 /* 5. 圖片與容器樣式 */
+/* 5. 圖片與容器樣式 (完全透明懸浮版) */
 .img-container {
-  padding: 20px;
-  border-radius: 25px;
+  padding: 5px; /* 縮小內距，讓容器更緊湊 */
+  max-width: 300px; /* 限制最大寬度 */
+  margin: 0 auto; /* 確保在 col-4 裡面置中 */
+  border-radius: 20px;
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   position: relative;
-  /* 組合漂浮與影子呼吸 */
+
+  /* 完全透明背景 */
+  background: transparent;
+  backdrop-filter: none;
+
   animation:
     float 4s infinite ease-in-out,
     shadow-breathe 4s infinite ease-in-out;
 }
 
+/* 調整圖片大小 */
+.img-container img {
+  transition: transform 0.5s ease;
+  max-height: 200px; /* 從 150px 縮小到 100px */
+  width: auto;
+  object-fit: contain;
+  animation: img-idle 6s infinite ease-in-out;
+}
+
+/* Hover 互動維持，但發光範圍也隨之縮小 */
+.img-container:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-10px) scale(1.05); /* 漂浮高度也稍微降低，保持比例 */
+  animation-play-state: paused;
+}
+
+#container-html:hover {
+  box-shadow: 0 10px 30px rgba(227, 76, 38, 0.3);
+}
+#container-css:hover {
+  box-shadow: 0 10px 30px rgba(0, 86, 179, 0.3);
+}
+#container-js:hover {
+  box-shadow: 0 10px 30px rgba(212, 172, 13, 0.3);
+}
 /* 錯開漂浮時間 */
 #container-html {
   animation-delay: 0s;
@@ -124,21 +179,6 @@ header h1 {
 }
 #container-js {
   animation-delay: 2s;
-}
-
-.img-container:hover {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  transform: translateY(-15px) scale(1.05);
-  animation-play-state: paused; /* Hover時停止漂浮 */
-}
-
-/* 為所有圖片容器加上基礎外框 */
-.img-container {
-  /* ... 原有的設定保持不變 ... */
-  border: 2px solid rgba(0, 0, 0, 0.1); /* 預設淡灰色細框 */
-  background: rgba(255, 255, 255, 0.5); /* 讓它帶點透明感 */
-  backdrop-filter: blur(5px);
 }
 
 /* 針對 HTML 容器強化邊框 (橘色) */
@@ -272,9 +312,65 @@ header h1 {
   font-weight: 900;
   color: #e34c26;
   opacity: 0.5;
+  z-index: 2;
 }
 
-/* 滑鼠移入暫停漂浮 */
-header:hover {
-  animation-play-state: paused;
+/* 9. CSS 容器畫筆刷過效果 */
+#container-css {
+  overflow: hidden;
+}
+
+#container-css::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 86, 179, 0.25),
+    transparent
+  );
+  pointer-events: none;
+  border-radius: 20px;
+}
+
+#container-css:hover::after {
+  animation: css-paint-sweep 1.5s ease-in-out infinite;
+}
+
+@keyframes css-paint-sweep {
+  0% { left: -60%; }
+  100% { left: 110%; }
+}
+
+/* 10. JS 打字游標效果 */
+#textC.text-js-active {
+  position: relative;
+}
+
+#textC.text-js-active::after {
+  content: "○";
+  color: #d4ac0d;
+  font-size: 1.2rem;
+  animation: blink-cursor 0.7s step-end infinite;
+  position: absolute;
+  bottom: 12px;
+  right: 18px;
+  pointer-events: none;
+}
+
+@keyframes blink-cursor {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 11. 漣漪點擊動畫 */
+@keyframes ripple-expand {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
 }
