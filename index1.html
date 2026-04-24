@@ -4,142 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>前端新手導覽手冊</title>
-    <!-- 引入 Bootstrap 5 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
-      crossorigin="anonymous"
     />
-    <style>
-      /* 基礎背景設定 */
-      body {
-        transition: background-color 0.8s ease;
-        background-color: #ffffff;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      /* 七彩漸層層 (修正動畫跑掉問題：首尾顏色需相同) */
-      body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        opacity: 0;
-        background: linear-gradient(
-          45deg,
-          #ff0000 0%,
-          /* 紅 */ #ff8800 14%,
-          /* 橙 */ #ffff00 28%,
-          /* 黃 */ #00ff00 42%,
-          /* 綠 */ #00ffff 56%,
-          /* 青 */ #0000ff 70%,
-          /* 藍 */ #ff00ff 84%,
-          /* 紫 */ #ff0000 100% /* 回到紅 (銜接點) */
-        );
-        background-size: 200% 200%;
-        transition: opacity 0.6s ease-in-out;
-      }
-
-      /* 觸發 CSS 專屬光譜 */
-      .bg-css-spectrum::before {
-        opacity: 0.7;
-        animation: rainbowMove 4s linear infinite;
-      }
-
-      @keyframes rainbowMove {
-        0% {
-          background-position: 0% 0%;
-        }
-        100% {
-          background-position: 200% 200%;
-        }
-      }
-
-      /* HTML & JS 基礎背景 */
-      .bg-html-theme {
-        background-color: #fff5f2;
-        background-image: radial-gradient(#e34c2622 1px, transparent 1px);
-        background-size: 20px 20px;
-      }
-      .bg-js-theme {
-        background-color: #fffdf0;
-        box-shadow: inset 0 0 100px rgba(247, 223, 30, 0.1);
-      }
-
-      /* Header 樣式 */
-      header {
-        padding: 25px;
-        border: black solid 5px;
-        border-radius: 15px;
-        text-align: center;
-        background-color: orange;
-        margin-top: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      /* 圖片容器聯動優化 */
-      .img-container {
-        padding: 20px;
-        border-radius: 25px;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        cursor: pointer;
-      }
-
-      .img-container:hover {
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        transform: translateY(-15px) scale(1.05);
-      }
-
-      .img-container img {
-        transition: transform 0.5s ease;
-        max-height: 150px;
-        object-fit: contain;
-      }
-
-      /* 文字介紹框樣式 */
-      #textC {
-        font-size: 28px;
-        font-weight: bold;
-        border: black solid 5px;
-        border-radius: 20px;
-        padding: 30px;
-        min-height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(10px);
-        transition: all 0.4s ease;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      }
-
-      .text-active {
-        transform: scale(1.03);
-        border-color: currentColor !important;
-      }
-
-      main {
-        padding: 20px;
-        border-radius: 30px;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body class="container">
     <header>
       <h1>前端語言：從零到一的抽象具象化</h1>
     </header>
+    <!-- 煙火畫布：覆蓋全螢幕且不擋住點擊 -->
+    <canvas
+      id="starfieldCanvas"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -2;
+      "
+    ></canvas>
 
     <main class="mt-5">
-      <!-- 圖片按鈕區 -->
       <div class="row text-center gy-4 justify-content-center">
-        <div class="col-4 img-container" id="container-html">
+        <!-- 注意這裡加上了 img-container-html -->
+        <div class="col-4 img-container img-container-html" id="container-html">
           <img id="HTMLimg" src="./img/html.png" alt="HTML" class="img-fluid" />
         </div>
         <div class="col-4 img-container" id="container-css">
@@ -150,7 +42,6 @@
         </div>
       </div>
 
-      <!-- 文字顯示區 -->
       <div class="row mt-5 justify-content-center">
         <div class="col-10 col-md-9">
           <div id="textC">請將滑鼠移至圖片上開始學習</div>
@@ -158,64 +49,6 @@
       </div>
     </main>
 
-    <script>
-      const body = document.body;
-      const textC = document.getElementById("textC");
-
-      // 定義各語言內容
-      const info = {
-        html: {
-          target: document.getElementById("container-html"),
-          text: "HTML：網頁的「骨架」，負責定義標籤結構與內容意義。",
-          color: "#E34C26",
-          bgClass: "bg-html-theme",
-        },
-        css: {
-          target: document.getElementById("container-css"),
-          text: "CSS：網頁的「外衣」，如同七彩光譜定義美感與佈局。",
-          color: "#0056b3",
-          bgClass: "bg-css-theme",
-          spectrum: "bg-css-spectrum",
-        },
-        js: {
-          target: document.getElementById("container-js"),
-          text: "JavaScript：網頁的「大腦」，賦予物件互動與邏輯行為。",
-          color: "#D4AC0D",
-          bgClass: "bg-js-theme",
-        },
-      };
-
-      // 封裝 Hover 邏輯
-      function initHover() {
-        Object.keys(info).forEach((lang) => {
-          const item = info[lang];
-
-          item.target.addEventListener("mouseenter", () => {
-            // 切換背景
-            body.classList.add(item.bgClass);
-            if (item.spectrum) body.classList.add(item.spectrum);
-
-            // 更新文字框
-            textC.innerText = item.text;
-            textC.style.color = item.color;
-            textC.classList.add("text-active");
-          });
-
-          item.target.addEventListener("mouseleave", () => {
-            // 移除所有相關類別
-            body.classList.remove(item.bgClass);
-            if (item.spectrum) body.classList.remove(item.spectrum);
-
-            // 恢復預設文字
-            textC.innerText = "請將滑鼠移至圖片上開始學習";
-            textC.style.color = "black";
-            textC.classList.remove("text-active");
-          });
-        });
-      }
-
-      // 啟動程式
-      window.onload = initHover;
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>
