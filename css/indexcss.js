@@ -268,24 +268,65 @@ const tagList = document.getElementById('tag-list');
 const detailArea = document.getElementById('detail-area');
 const editor = document.getElementById('code-editor');
 const target = document.getElementById('target-element');
+const topicSearch = document.getElementById('topic-search');
+const topicCounter = document.getElementById('topic-counter');
 
-function initMenu() {
+let activeTopicKey = '';
+
+function filterTopics(keyword = '') {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+
+    return Object.entries(cssData).filter(([, topic]) => {
+        const haystack = [
+            topic.title,
+            topic.badge,
+            topic.concept,
+            topic.analogy,
+            topic.why || '',
+            topic.caution,
+            ...topic.anatomy.map(item => `${item.prop} ${item.desc}`),
+            ...(topic.relatedProps || [])
+        ].join(' ').toLowerCase();
+
+        return haystack.includes(normalizedKeyword);
+    });
+}
+
+function initMenu(keyword = '') {
+    const entries = filterTopics(keyword);
+
     tagList.innerHTML = '';
-    Object.keys(cssData).forEach(key => {
+    topicCounter.innerText = `${entries.length} 個主題`;
+
+    if (!entries.length) {
+        tagList.innerHTML = '<div class="tag-empty">找不到符合條件的 CSS 主題。</div>';
+        return;
+    }
+
+    entries.forEach(([key, topic]) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'tag-item';
+        button.className = `tag-item${activeTopicKey === key ? ' active' : ''}`;
         button.setAttribute('data-css-key', key);
         button.innerHTML = `
             <div>
-                <div class="badge-category">${cssData[key].badge}</div>
-                <div class="fw-bold">${cssData[key].title.split(' · ')[1]}</div>
+                <div class="badge-category">${topic.badge}</div>
+                <div class="fw-bold">${topic.title.split(' · ')[1]}</div>
             </div>
             <i class="bi bi-chevron-right opacity-50"></i>
         `;
         button.addEventListener('click', () => loadCSS(key, button));
         tagList.appendChild(button);
     });
+
+    const activeButton = activeTopicKey
+        ? tagList.querySelector(`[data-css-key="${activeTopicKey}"]`)
+        : null;
+
+    if (activeButton) {
+        activeButton.classList.add('active');
+        return;
+    }
 
     const firstButton = tagList.querySelector('[data-css-key]');
     if (firstButton) {
@@ -295,6 +336,7 @@ function initMenu() {
 
 function loadCSS(key, element) {
     const data = cssData[key];
+    activeTopicKey = key;
 
     document.querySelectorAll('.tag-item').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
@@ -356,6 +398,10 @@ function applyPreviewStyles(cssText) {
 
 editor.addEventListener('input', function () {
     applyPreviewStyles(this.value);
+});
+
+topicSearch.addEventListener('input', function () {
+    initMenu(this.value);
 });
 
 initMenu();

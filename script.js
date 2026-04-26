@@ -9,7 +9,7 @@ const textC = document.getElementById("textC");
 const info = {
   html: {
     target: document.getElementById("container-html"),
-    url: "https://mozilla.org",
+    url: "./html/indexhtml.html",
     color: "#E34C26",
     bgClass: "bg-html-theme",
     text: `<div class="tech-card text-start">
@@ -19,7 +19,7 @@ const info = {
   },
   css: {
     target: document.getElementById("container-css"),
-    url: "https://mozilla.org",
+    url: "./css/indexcss.html",
     color: "#0056b3",
     bgClass: "bg-css-theme",
     spectrum: "bg-css-spectrum",
@@ -30,16 +30,13 @@ const info = {
   },
   js: {
     target: document.getElementById("container-js"),
-    url: "https://javascript.info",
+    url: "./JS/indexjs.html",
     color: "#D4AC0D",
     bgClass: "bg-js-theme",
     text: `<div class="tech-card text-start">
         <h3 style="color: #D4AC0D; border-bottom: 2px solid #D4AC0D; padding-bottom: 10px;"><i class="bi bi-cpu"></i> JavaScript (ECMAScript)</h3>
         <p class="mt-3" style="font-size: 1.1rem; line-height: 1.8;"><strong>JavaScript</strong> 是網頁的大腦邏輯。負責處理互動、計算，賦予網頁生命力。</p>
       </div>`,
-    customClick(e) {
-      showJsModal();
-    },
   },
 };
 
@@ -48,6 +45,15 @@ function initHover() {
   Object.keys(info).forEach((lang) => {
     const item = info[lang];
     if (!item.target) return;
+
+    const activateItem = (event) => {
+      createRipple(event, item.color);
+      if (item.customClick) {
+        item.customClick(event);
+      } else {
+        window.open(item.url, "_blank");
+      }
+    };
 
     item.target.addEventListener("mouseenter", () => {
       body.classList.add(item.bgClass);
@@ -68,11 +74,17 @@ function initHover() {
     });
 
     item.target.addEventListener("click", (e) => {
-      createRipple(e, item.color);
-      if (item.customClick) {
-        item.customClick(e);
-      } else {
-        window.open(item.url, "_blank");
+      activateItem(e);
+    });
+
+    item.target.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        activateItem({
+          currentTarget: item.target,
+          clientX: item.target.getBoundingClientRect().left + item.target.offsetWidth / 2,
+          clientY: item.target.getBoundingClientRect().top + item.target.offsetHeight / 2,
+        });
       }
     });
   });

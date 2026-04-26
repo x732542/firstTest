@@ -1,0 +1,237 @@
+:root {
+    --primary: #1768ac;
+    --accent: #ffd166;
+    --surface: #ffffff;
+    --surface-soft: #f5f7fb;
+    --border: #d6deeb;
+    --text: #1f2a37;
+    --muted: #5f6b7a;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #eef4fb 0%, #f8fafc 100%);
+    color: var(--text);
+    font-family: "Microsoft JhengHei", sans-serif;
+}
+
+.page-shell {
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(28, 58, 92, 0.08);
+    padding: 24px;
+    height: 100%;
+}
+
+.hero {
+    margin-bottom: 20px;
+    padding: 24px 28px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #1768ac, #4ea5d9);
+    color: #fff;
+    box-shadow: 0 14px 32px rgba(23, 104, 172, 0.25);
+}
+
+.hero p {
+    margin: 10px 0 0;
+    max-width: 760px;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.filter-box {
+    position: relative;
+}
+
+.filter-box input {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 14px;
+    padding: 12px 16px 12px 42px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-box input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(23, 104, 172, 0.12);
+}
+
+.filter-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.filter-empty {
+    display: grid;
+    place-items: center;
+    min-height: 160px;
+    border: 1px dashed var(--border);
+    border-radius: 18px;
+    color: var(--muted);
+    text-align: center;
+    padding: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.sidebar-scroll {
+    max-height: calc(100vh - 270px);
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.tag-group + .tag-group {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.tag-group-title {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.tag-list {
+    display: grid;
+    gap: 10px;
+}
+
+.tag-item {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: #fff;
+    text-align: left;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tag-item:hover {
+    border-color: var(--primary);
+    background: #f3f8fd;
+    transform: translateX(4px);
+}
+
+.tag-item.active {
+    border-color: var(--primary);
+    background: #e8f2fb;
+}
+
+.tag-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.tag-label {
+    font-weight: 700;
+}
+
+.tag-note {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.detail-empty {
+    display: grid;
+    place-items: center;
+    min-height: 100%;
+    color: var(--muted);
+    text-align: center;
+}
+
+.detail-block {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    height: 100%;
+}
+
+.pill {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #dcecff;
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.preview-area {
+    min-height: 180px;
+    border: 1px dashed #c5d2e2;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    padding: 18px;
+}
+
+.editor {
+    min-height: 220px;
+    border: none;
+    border-radius: 18px;
+    background: #1e293b;
+    color: #d4f1f9;
+    font-family: Consolas, "Courier New", monospace;
+    line-height: 1.5;
+    padding: 18px;
+    resize: none;
+}
+
+.editor:focus {
+    box-shadow: none;
+    background: #0f172a;
+    color: #e2f3ff;
+}
+
+.info-list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.info-list li + li {
+    margin-top: 8px;
+}
+
+code {
+    color: #c0266d;
+    font-weight: 700;
+}
+
+@media (max-width: 991px) {
+    .sidebar-scroll {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-shell {
+        padding: 16px;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+}

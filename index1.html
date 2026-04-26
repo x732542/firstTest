@@ -10,6 +10,7 @@
 
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
@@ -31,36 +32,36 @@
   <main class="mt-5">
     <div class="row text-center gy-4 justify-content-center">
       <!-- 注意這裡加上了 img-container-html -->
-      <div class="col-4 img-container img-container-html" id="container-html">
+      <div class="col-12 col-sm-6 col-lg-4 img-container img-container-html" id="container-html" role="button" tabindex="0" aria-label="開啟 HTML 學習介紹">
         <img id="HTMLimg" src="./img/html5.png" alt="HTML" class="img-fluid" />
       </div>
-      <div class="col-4 img-container" id="container-css">
+      <div class="col-12 col-sm-6 col-lg-4 img-container" id="container-css" role="button" tabindex="0" aria-label="開啟 CSS 學習介紹">
         <img id="CSSimg" src="./img/css3.png" alt="CSS" class="img-fluid" />
       </div>
-      <div class="col-4 img-container" id="container-js">
+      <div class="col-12 col-sm-6 col-lg-4 img-container" id="container-js" role="button" tabindex="0" aria-label="開啟 JavaScript 學習介紹">
         <img id="JSimg" src="./img/js.png" alt="JS" class="img-fluid" />
       </div>
     </div>
 
     <div class="row mt-5 justify-content-center">
       <div class="col-10 col-md-9">
-        <div id="textC">請將滑鼠移至圖片上開始學習</div>
+        <div id="textC" aria-live="polite">請將滑鼠移至圖片上開始學習</div>
       </div>
     </div>
   </main>
 
-  <script src="script.js"></script>
-
   <!-- JS 練習網自訂確認框 -->
   <div id="js-confirm-modal">
-    <div class="js-modal-box">
-      <p>要前往 <strong>JavaScript.info</strong> 練習網嗎？</p>
+    <div class="js-modal-box" role="dialog" aria-modal="true" aria-labelledby="js-modal-title">
+      <p id="js-modal-title">要前往 <strong>JavaScript.info</strong> 練習網嗎？</p>
       <div class="js-modal-btns">
         <button id="js-modal-yes">是，前往！</button>
         <button id="js-modal-no">不了，留下來</button>
       </div>
     </div>
   </div>
+
+  <script src="script.js"></script>
 </body>
 
 </html>

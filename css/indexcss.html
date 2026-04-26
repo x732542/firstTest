@@ -20,8 +20,15 @@
             <!-- 左側：自動選單 -->
             <div class="col-md-3 h-100">
                 <div class="box d-flex flex-column">
-                    <h4 class="fw-bold mb-1"><i class="bi bi-palette2 text-primary"></i> CSS 實驗室</h4>
-                    <p class="small text-muted mb-4">點選屬性開始改造 HTML</p>
+                    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-1">
+                        <h4 class="fw-bold mb-0"><i class="bi bi-palette2 text-primary"></i> CSS 實驗室</h4>
+                        <span class="topic-counter" id="topic-counter">0 個主題</span>
+                    </div>
+                    <p class="small text-muted mb-3">點選屬性開始改造 HTML</p>
+                    <div class="filter-box mb-4">
+                        <i class="bi bi-search"></i>
+                        <input id="topic-search" type="text" placeholder="搜尋 flex、動畫、陰影、定位..." aria-label="搜尋 CSS 主題">
+                    </div>
                     <div id="tag-list" class="flex-grow-1" aria-label="CSS 主題清單">
                         <!-- JS 自動生成 -->
                     </div>
