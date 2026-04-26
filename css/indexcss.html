@@ -13,30 +13,35 @@
 </head>
 
 <body>
+    <div class="page-shell">
+        <section class="hero">
+            <h1 class="h2 mb-0">CSS 深度風格實驗室</h1>
+            <p>沿用 HTML 教學頁的版面節奏，保留 CSS 實驗室的藍綠色系與流體感。左側挑主題，中間看拆解，右側直接改樣式並即時觀察效果。</p>
+        </section>
 
-    <div class="container-fluid py-2 h-100">
-        <div class="row main-row g-4">
+        <div class="container-fluid px-0">
+            <div class="row main-row g-4">
 
             <!-- 左側：自動選單 -->
-            <div class="col-md-3 h-100">
-                <div class="box d-flex flex-column">
-                    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-1">
-                        <h4 class="fw-bold mb-0"><i class="bi bi-palette2 text-primary"></i> CSS 實驗室</h4>
+            <div class="col-lg-3 h-100">
+                <aside class="box d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+                        <h2 class="h5 mb-0">主題索引</h2>
                         <span class="topic-counter" id="topic-counter">0 個主題</span>
                     </div>
-                    <p class="small text-muted mb-3">點選屬性開始改造 HTML</p>
-                    <div class="filter-box mb-4">
-                        <i class="bi bi-search"></i>
+                    <p class="sidebar-note">點選屬性開始改造 HTML，從左側挑主題後可立即在右側實驗。</p>
+                    <div class="filter-box mb-3">
+                        <span class="filter-icon"><i class="bi bi-search"></i></span>
                         <input id="topic-search" type="text" placeholder="搜尋 flex、動畫、陰影、定位..." aria-label="搜尋 CSS 主題">
                     </div>
-                    <div id="tag-list" class="flex-grow-1" aria-label="CSS 主題清單">
+                    <div id="tag-list" class="sidebar-scroll flex-grow-1" aria-label="CSS 主題清單">
                         <!-- JS 自動生成 -->
                     </div>
-                </div>
+                </aside>
             </div>
 
             <!-- 中間：百科全書教學內容 -->
-            <div class="col-md-5 h-100">
+            <div class="col-lg-5 h-100">
                 <div class="box" id="detail-area">
                     <div class="text-center py-5 mt-5">
                         <i class="bi bi-stars display-1 text-primary opacity-25"></i>
@@ -47,7 +52,7 @@
             </div>
 
             <!-- 右側：實時預覽與編輯 -->
-            <div class="col-md-4 h-100">
+            <div class="col-lg-4 h-100">
                 <div class="row h-100 g-4">
                     <div class="col-12 h-50">
                         <div class="box">
@@ -69,6 +74,7 @@
                 </div>
             </div>
 
+            </div>
         </div>
     </div>
 
