@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 深度風格實驗室 - 完整版</title>
+    <!-- 引入 Bootstrap、Icons 與動畫 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet" />
+    <link href="./indexcss.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div class="container-fluid py-2 h-100">
+        <div class="row main-row g-4">
+
+            <!-- 左側：自動選單 -->
+            <div class="col-md-3 h-100">
+                <div class="box d-flex flex-column">
+                    <h4 class="fw-bold mb-1"><i class="bi bi-palette2 text-primary"></i> CSS 實驗室</h4>
+                    <p class="small text-muted mb-4">點選屬性開始改造 HTML</p>
+                    <div id="tag-list" class="flex-grow-1" aria-label="CSS 主題清單">
+                        <!-- JS 自動生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中間：百科全書教學內容 -->
+            <div class="col-md-5 h-100">
+                <div class="box" id="detail-area">
+                    <div class="text-center py-5 mt-5">
+                        <i class="bi bi-stars display-1 text-primary opacity-25"></i>
+                        <h3 class="mt-4 fw-bold">選擇一個 CSS 主題</h3>
+                        <p class="text-secondary">深入了解屬性背後的邏輯與美學</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：實時預覽與編輯 -->
+            <div class="col-md-4 h-100">
+                <div class="row h-100 g-4">
+                    <div class="col-12 h-50">
+                        <div class="box">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-eye"></i> 即時預覽</h5>
+                            <div id="preview-window" class="rounded-3 h-75">
+                                <div id="target-element">Hello CSS</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 h-50">
+                        <div class="box d-flex flex-column">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-terminal"></i> CSS 屬性編輯器</h5>
+                            <textarea id="code-editor" class="form-control flex-grow-1" spellcheck="false" aria-label="CSS 屬性編輯器"></textarea>
+                            <div class="mt-2 text-muted" style="font-size: 0.8rem;">
+                                <i class="bi bi-magic"></i> 老師提示：右邊改完，左邊立即生效！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="./indexcss.js"></script>
+
+</body>
+
+</html>
