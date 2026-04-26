@@ -39,7 +39,7 @@ const tagGroups = [
         title: '版面語意',
         items: [
             makeTag('版面語意', 'header', 'header 頁首', '區塊或頁面的開頭', 'header 頁首區', '語意結構', 'header 通常放網站標題、Logo、導覽或區塊標頭。', '像報紙最上方的報頭。', '<code>&lt;header&gt;</code>', '定義區塊的開頭資訊。', '<header class="py-4 border-bottom">\n  <h1>網站名稱</h1>\n</header>', '可搭配滾動事件做固定頁首。', '一個頁面可有主 header，也可有區塊自己的 header。', 'py-4 border-bottom', '常拿來做頁首留白與底線。'),
-            makeTag('版面語意', 'nav', 'nav 導覽區', '網站主要導覽連結', 'nav 導覽區', '語意結構', 'nav 專門放重要導覽連結。', '像百貨公司的樓層指引牌。', '<code>&lt;nav&gt;</code>', '標記這裡是一組導覽連結。', '<nav class="d-flex gap-3">\n  <a href="#">首頁</a>\n  <a href="#">課程</a>\n</nav>', '常搭配漢堡選單切換顯示狀態。', '只有主要導覽才適合用 nav。', 'd-flex gap-3', '常配合水平排列的導覽列。'),
+            makeTag('版面語意', 'nav', 'nav 導覽區', '網站主要導覽連結', 'nav 導覽區', '語意結構', 'nav 專門放重要導覽連結。', '像百貨公司的樓層指引牌。', '<code>&lt;nav&gt;</code>', '標記這裡是一組導覽連結。', '<nav class="d-flex gap-3">\n  <a href="./home">首頁</a>\n  <a href="./courses">課程</a>\n</nav>', '常搭配漢堡選單切換顯示狀態。', '只有主要導覽才適合用 nav。', 'd-flex gap-3', '常配合水平排列的導覽列。'),
             makeTag('版面語意', 'main', 'main 主要內容', '頁面核心資訊區', 'main 主要內容區', '語意結構', 'main 表示頁面最主要的內容主體，一頁通常只有一個。', '像展覽館的主展區。', '<code>&lt;main&gt;</code>', '讓輔助工具快速跳到主要內容。', '<main class="container py-5">\n  <section>課程介紹</section>\n</main>', '通常是承載各段落與功能區。', '不要把頁首與頁尾包進 main。', 'container py-5', '常搭配容器與留白。'),
             makeTag('版面語意', 'section', 'section 內容區段', '同主題內容的群組', 'section 區段標籤', '語意結構', 'section 適合包住同一主題的一組內容。', '像簡報中的一頁小節。', '<code>&lt;section&gt;</code>', '切分主題明確的內容區塊。', '<section class="mb-5">\n  <h2>課程大綱</h2>\n  <p>這一區整理你會學到的內容。</p>\n</section>', '可搭配捲動定位與區塊切換。', '如果只是排版容器，未必一定要用 section。', 'mb-5', '常用來拉開區段距離。'),
             makeTag('版面語意', 'article', 'article 獨立文章', '可獨立閱讀的內容', 'article 文章區塊', '語意結構', 'article 適合新聞、貼文、卡片文章等可單獨存在的內容。', '像一篇可以單獨轉貼的文章。', '<code>&lt;article&gt;</code>', '定義可獨立理解與重用的內容。', '<article>\n  <h2>HTML 入門筆記</h2>\n  <p>這篇文章整理最常見的標籤。</p>\n</article>', '常用於部落格、新聞與商品卡片迭代。', '如果內容不能脫離上下文單獨存在，可能更適合 section。', 'card-like 版型', '常搭配卡片或文章列表。'),
@@ -56,7 +56,7 @@ const tagGroups = [
             makeTag('文字與連結', 'span', 'span 行內容器', '局部包住一小段文字', 'span 行內容器', '內容結構', 'span 沒有特殊語意，適合包住一小段文字做局部樣式或 JS 操作。', '像用螢光筆圈出某個詞。', '<code>&lt;span&gt;</code>', '包住行內內容，不會自動換行。', '<p>學會 <span class="text-danger fw-bold">HTML 結構</span> 是前端第一步。</p>', '很適合給局部字串加 id 或 data-*。', 'span 本身沒有語意，強調語意時改用 strong 或 em。', 'text-danger fw-bold', '常用來強調局部片段。'),
             makeTag('文字與連結', 'strong', 'strong 重要強調', '語意上更重要的內容', 'strong 強調標籤', '文字語意', 'strong 代表語意上的重要內容，不只是視覺粗體。', '像老師提高音量說重點。', '<code>&lt;strong&gt;</code>', '標記重要內容。', '<p>提交之前請再次確認 <strong>電子郵件地址</strong> 是否正確。</p>', '通常不需單獨互動，但可用於動態提示。', '如果只是視覺粗體，不一定要用 strong。', '語意優先', '它重點在重要性而不是外觀。'),
             makeTag('文字與連結', 'em', 'em 語氣強調', '句意上的語氣強調', 'em 語氣強調', '文字語意', 'em 用來表達語氣或語意上的強調。', '像講話時特別加重某個字。', '<code>&lt;em&gt;</code>', '表示句意上的重點，通常顯示為斜體。', '<p>你 <em>真的</em> 需要替圖片補上 alt 描述。</p>', '多用於靜態語意，不是主要互動節點。', '不要把 em 當成純粹斜體工具。', '語氣提示', '適合補充提醒或轉折語句。'),
-            makeTag('文字與連結', 'a', 'a 超連結', '連到其他頁面或位置', 'a 超連結標籤', '導覽元件', '超連結讓使用者在頁面間移動，也能跳到外部網站。', '像地圖上的指路牌。', '<code>href</code>', '決定點擊後導向的目標。', '<a href="#" class="btn btn-link text-decoration-none">查看課程大綱</a>', '可監聽點擊做追蹤，但不應破壞導覽語意。', '連結文字要具體，不要只寫點我。', 'text-decoration-none', '常用來移除底線。', '<code>target="_blank"</code>', '新分頁開啟外部連結。'),
+            makeTag('文字與連結', 'a', 'a 超連結', '連到其他頁面或位置', 'a 超連結標籤', '導覽元件', '超連結讓使用者在頁面間移動，也能跳到外部網站。', '像地圖上的指路牌。', '<code>href</code>', '決定點擊後導向的目標。', '<a href="./lesson-outline" class="btn btn-link text-decoration-none">查看課程大綱</a>', '可監聽點擊做追蹤，但不應破壞導覽語意。', '連結文字要具體，不要只寫點我。', 'text-decoration-none', '<code>target="_blank"</code>', '新分頁開啟外部連結。'),
             makeTag('文字與連結', 'small', 'small 次要文字', '補充或附註文字', 'small 次要文字', '文字語意', 'small 適合用在版權、附註、說明補充等較次要資訊。', '像投影片底部的補充小字。', '<code>&lt;small&gt;</code>', '表示次要或附加說明。', '<p>課程價格 <small class="text-muted">含稅與講義費</small></p>', '通常不作主要互動，但可搭配動態提示。', '不要把所有小字都濫用 small，仍要看語意。', 'text-muted', '常讓次要資訊降低對比。'),
             makeTag('文字與連結', 'mark', 'mark 螢光標記', '標示值得注意的內容', 'mark 標記文字', '文字語意', 'mark 代表這段內容在當前上下文中特別值得注意。', '像拿螢光筆畫重點。', '<code>&lt;mark&gt;</code>', '標示一段被特別關注的文字。', '<p>請先完成 <mark>HTML 結構</mark> 再開始學 CSS。</p>', '可用於搜尋關鍵字高亮顯示。', '如果只是換顏色，未必需要用 mark。', 'bg-warning', '概念上接近高亮提醒。'),
             makeTag('文字與連結', 'br', 'br 換行', '在文字中斷行', 'br 換行標籤', '文字排版', 'br 用來做單純換行。', '像在同一段話中手動按一次 Enter。', '<code>&lt;br&gt;</code>', '在當前位置插入換行。', '<p>台北市中正區<br>仁愛路一段 100 號</p>', '幾乎不需要互動邏輯。', '段落分開時應該用 p，不是用很多個 br。', '精簡使用', '適合格式化短文。'),
@@ -88,8 +88,8 @@ const tagGroups = [
             makeTag('表單與媒體', 'select', 'select 下拉選單', '從固定選項中挑選', 'select 下拉選單', '資料互動', 'select 適合固定選項，例如分類、地區、狀態。', '像櫃台上的號碼牌機。', '<code>&lt;select&gt;</code>', '建立選單外層。', '<select class="form-select">\n  <option>初階課程</option>\n  <option>進階課程</option>\n</select>', '常監聽 change 事件取得目前選值。', '選項太少時可考慮 radio。', 'form-select', 'Bootstrap 下拉選單標準樣式。', '<code>&lt;option&gt;</code>', '建立每個可選項目。'),
             makeTag('表單與媒體', 'option', 'option 選單項目', 'select 內的單一選項', 'option 選單項目', '資料互動', 'option 是 select 裡的每個選項，通常會帶 value。', '像菜單裡的一道可點選項。', '<code>&lt;option value="html"&gt;HTML&lt;/option&gt;</code>', '建立一個可被選到的值。', '<select class="form-select">\n  <option value="html">HTML</option>\n  <option value="css">CSS</option>\n</select>', '搭配 select.value 讀取目前選項。', '顯示文字與 value 可以不同。', 'value 屬性', '讓表單送出時有穩定的實際值。'),
             makeTag('表單與媒體', 'button', 'button 按鈕', '觸發事件與操作流程', 'button 互動按鈕', '資料互動', 'button 是觸發互動的主要入口。', '像機器上的操作鍵。', '<code>type="button"</code>', '避免在表單中誤觸發送出。', '<button type="button" class="btn btn-success rounded-pill px-4">完成任務</button>', '典型寫法是 addEventListener("click", handler)。', '按鈕文字要描述動作本身。', 'btn btn-success', '快速做出清楚的操作按鈕。'),
-            makeTag('表單與媒體', 'img', 'img 圖片', '顯示照片、插圖與示意圖', 'img 圖片標籤', '媒體內容', 'img 用來補充視覺資訊，但要顧及響應式與替代文字。', '像簡報中的插圖。', '<code>src</code>', '指定圖片來源。', '<img src="https://picsum.photos/600/300" class="img-fluid rounded" alt="課堂示意圖">', '可透過 JS 更換圖片來源，做輪播或縮圖切換。', 'alt 要描述圖片用途，不要只寫圖片。', 'img-fluid rounded', '讓圖片自適應寬度並有圓角。', '<code>alt</code>', '提供替代描述，強化無障礙。'),
-            makeTag('表單與媒體', 'video', 'video 影片', '嵌入可播放影片', 'video 影片標籤', '媒體內容', 'video 用來在頁面中播放影片，不必依賴外部播放器。', '像直接把影片播放器放進網頁。', '<code>&lt;video controls&gt;</code>', '建立可播放影片的區塊。', '<video controls width="320">\n  <source src="movie.mp4" type="video/mp4">\n  你的瀏覽器不支援 video。\n</video>', '可搭配 JS 控制播放、暫停與進度。', '記得提供 controls 或自訂可操作介面。', 'controls', '讓使用者能直接播放與控制。', '<code>&lt;source&gt;</code>', '可提供多種影片格式來源。')
+            makeTag('表單與媒體', 'img', 'img 圖片', '顯示照片、插圖與示意圖', 'img 圖片標籤', '媒體內容', 'img 用來補充視覺資訊，但要顧及響應式與替代文字。', '像簡報中的插圖。', '<code>src</code>', '指定圖片來源。', '<img src="kitty.jpg" class="img-fluid rounded" alt="Kitty 示意圖片">', '可透過 JS 更換圖片來源，做輪播或縮圖切換。', 'alt 要描述圖片用途，不要只寫圖片。', 'img-fluid rounded', '讓圖片自適應寬度並有圓角。', '<code>alt</code>', '提供替代描述，強化無障礙。'),
+            makeTag('表單與媒體', 'video', 'video 影片', '嵌入可播放影片', 'video 影片標籤', '媒體內容', 'video 用來在頁面中播放影片，不必依賴外部播放器。', '像直接把影片播放器放進網頁。', '<code>&lt;video controls&gt;</code>', '建立可播放影片的區塊。', '<video controls width="320" poster="kitty.jpg">\n  <source src="video.mp4" type="video/mp4">\n  你的瀏覽器不支援 video。\n</video>', '可搭配 JS 控制播放、暫停與進度。', '記得提供 controls 或自訂可操作介面。', 'controls', '讓使用者能直接播放與控制。', '<code>&lt;source&gt;</code>', '可提供多種影片格式來源。')
         ]
     }
 ];
@@ -225,12 +225,27 @@ function renderPreview(tagKey, code) {
     previewArea.innerHTML = code;
 }
 
+function bindPreviewSandbox() {
+    previewArea.querySelectorAll('a').forEach((anchor) => {
+        anchor.addEventListener('click', (event) => {
+            event.preventDefault();
+        });
+    });
+
+    previewArea.querySelectorAll('form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+    });
+}
+
 function showDetail(tagKey) {
     const item = tagsData[tagKey];
     if (!item) return;
     renderDetail(item);
     codeEditor.value = item.code;
     renderPreview(tagKey, item.code);
+    bindPreviewSandbox();
     setActiveTag(tagKey);
 }
 
@@ -267,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         renderPreview(activeTag, codeEditor.value);
+        bindPreviewSandbox();
     });
     showDetail('h1');
 });
