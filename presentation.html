@@ -1,0 +1,988 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>前端語言：從零到一 — 簡報</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a23;
+      --card:      #1e2330;
+      --border:    rgba(255,255,255,0.08);
+      --text:      #e8eaf0;
+      --muted:     #8890a4;
+      --orange:    #f59e0b;
+      --orange-d:  #d97706;
+      --blue:      #38bdf8;
+      --green:     #34d399;
+      --purple:    #a78bfa;
+      --red:       #f87171;
+      --radius:    14px;
+      --slide-w:   1200px;
+      --slide-h:   680px;
+    }
+
+    html, body {
+      height: 100%;
+      background: #06080d;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ───── 外框 ───── */
+    .deck-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 16px;
+    }
+
+    /* ───── 投影片容器 ───── */
+    .slide-viewport {
+      position: relative;
+      width: var(--slide-w);
+      height: var(--slide-h);
+      background: var(--bg);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px var(--border);
+    }
+
+    /* ───── 單張投影片 ───── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 52px 64px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity .4s ease, transform .4s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    /* ───── 頁碼條 ───── */
+    .slide-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: var(--slide-w);
+    }
+    .slide-counter {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .5px;
+    }
+    .nav-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .nav-btn {
+      width: 38px; height: 38px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, transform .15s;
+    }
+    .nav-btn:hover { background: var(--card); transform: scale(1.08); }
+    .nav-btn:disabled { opacity: .3; cursor: default; transform: none; }
+
+    /* ───── 進度條 ───── */
+    .progress-bar-track {
+      width: var(--slide-w);
+      height: 3px;
+      background: var(--border);
+      border-radius: 9px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), var(--blue));
+      border-radius: 9px;
+      transition: width .4s ease;
+    }
+
+    /* ═══════════════════════════════════
+       通用元件
+    ═══════════════════════════════════ */
+    .slide-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .slide-title {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .slide-subtitle {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 800px;
+    }
+    .divider {
+      width: 48px; height: 4px;
+      border-radius: 9px;
+      margin: 16px 0;
+    }
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ───── 卡片網格 ───── */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      flex: 1;
+      align-content: start;
+    }
+    .card-grid.col-3 { grid-template-columns: repeat(3, 1fr); }
+    .card-grid.col-2 { grid-template-columns: repeat(2, 1fr); }
+    .card-grid.col-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .info-card .card-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .info-card .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .info-card .card-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ───── 特色行列 ───── */
+    .feature-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-row:last-child { border-bottom: none; }
+    .feature-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .feature-text .ft-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .feature-text .ft-desc { font-size: 12.5px; color: var(--muted); }
+
+    /* ───── 課程徽章列表 ───── */
+    .lesson-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 16px;
+    }
+    .lesson-item .l-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lesson-item .l-title { font-size: 13.5px; font-weight: 600; flex: 1; }
+    .lesson-item .l-desc { font-size: 11.5px; color: var(--muted); flex: 2; }
+
+    .badge-basic   { background: rgba(52,211,153,.15); color: var(--green); }
+    .badge-mid     { background: rgba(56,189,248,.15); color: var(--blue); }
+    .badge-midhi   { background: rgba(167,139,250,.15); color: var(--purple); }
+    .badge-adv     { background: rgba(248,113,113,.15); color: var(--red); }
+
+    /* ───── 兩欄版型 ───── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      align-content: start;
+    }
+
+    /* ───── 大數字 ───── */
+    .stat-row {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .stat-box { text-align: center; }
+    .stat-num { font-size: 44px; font-weight: 900; line-height: 1; }
+    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ───── 檔案樹 ───── */
+    .file-tree {
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .file-tree .dir { color: var(--blue); font-weight: 700; }
+    .file-tree .file-html { color: var(--orange); }
+    .file-tree .file-css  { color: var(--blue); }
+    .file-tree .file-js   { color: var(--green); }
+    .file-tree .file-img  { color: var(--purple); }
+
+    /* ─── 顏色 accent ─── */
+    .accent-orange { color: var(--orange); }
+    .accent-blue   { color: var(--blue); }
+    .accent-green  { color: var(--green); }
+    .accent-purple { color: var(--purple); }
+    .accent-red    { color: var(--red); }
+
+    .bg-orange { background: rgba(245,158,11,.12); }
+    .bg-blue   { background: rgba(56,189,248,.12); }
+    .bg-green  { background: rgba(52,211,153,.12); }
+    .bg-purple { background: rgba(167,139,250,.12); }
+    .bg-red    { background: rgba(248,113,113,.12); }
+    .border-orange { border-color: rgba(245,158,11,.3) !important; }
+    .border-blue   { border-color: rgba(56,189,248,.3) !important; }
+    .border-green  { border-color: rgba(52,211,153,.3) !important; }
+    .border-purple { border-color: rgba(167,139,250,.3) !important; }
+
+    /* 背景裝飾 */
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .slide > * { position: relative; z-index: 1; }
+
+    /* ─── 目錄卡片 ─── */
+    .toc-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .toc-card:hover { background: #252c3a; transform: translateY(-2px); }
+    .toc-card .toc-num {
+      font-size: 28px; font-weight: 900; line-height: 1;
+      min-width: 40px;
+    }
+    .toc-card .toc-info .toc-name { font-size: 16px; font-weight: 700; }
+    .toc-card .toc-info .toc-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── code block ─── */
+    .code-block {
+      background: #0a0c10;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'Consolas', monospace;
+      font-size: 12.5px;
+      color: #c9d1d9;
+      line-height: 1.7;
+      overflow: auto;
+    }
+    .code-block .kw  { color: #ff7b72; }
+    .code-block .str { color: #a5d6ff; }
+    .code-block .fn  { color: #d2a8ff; }
+    .code-block .cm  { color: #6e7681; }
+    .code-block .nm  { color: #ffa657; }
+
+    /* ─── 大型圖示卡 ─── */
+    .big-icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 16px;
+    }
+    .big-icon-card .bi-icon { font-size: 36px; }
+    .big-icon-card .bi-label { font-size: 13px; font-weight: 700; }
+    .big-icon-card .bi-desc  { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+    /* ─── 標題幻燈片特殊版 ─── */
+    #slide-0 {
+      justify-content: center;
+      gap: 0;
+    }
+    #slide-0 .slide-title { font-size: 52px; }
+    #slide-0 .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+
+  </style>
+</head>
+<body>
+
+<div class="deck-shell">
+  <!-- 進度條 -->
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+
+  <!-- 投影片視窗 -->
+  <div class="slide-viewport" id="deck">
+
+    <!-- ══════════════════════════════════════════
+         Slide 0 · 封面
+    ══════════════════════════════════════════ -->
+    <div class="slide active" id="slide-0">
+      <div class="bg-blob" style="width:420px;height:420px;background:rgba(245,158,11,.12);top:-100px;right:-80px;"></div>
+      <div class="bg-blob" style="width:300px;height:300px;background:rgba(56,189,248,.1);bottom:-60px;left:-60px;"></div>
+
+
+      <div class="slide-label">Frontend Learning Platform · 2026</div>
+      <div class="slide-title">前端練習器<br><span class="accent-orange">從零到 一</span>的抽象具象化</div>
+      <div class="divider" style="background:linear-gradient(90deg,var(--orange),var(--blue));"></div>
+      <div class="slide-subtitle">
+        一套整合 HTML、CSS、JavaScript 的互動教學平台，<br>
+        透過可即時操作的學習工具，讓觀念從抽象變成具體看得到的結果。
+      </div>
+
+      <!-- 報告資訊卡 -->
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+          <i class="bi bi-person-circle accent-orange" style="font-size:18px;"></i>
+          <div>
+            <div style="font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">報告人</div>
+            <div style="font-size:15px;font-weight:700;">柯伯賢</div>
+          </div>
+        </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+          <i class="bi bi-tools accent-green" style="font-size:18px;"></i>
+          <div>
+            <div style="font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">使用工具</div>
+            <div style="font-size:13px;font-weight:600;display:flex;gap:6px;flex-wrap:wrap;margin-top:3px;">
+              <span style="background:rgba(248,113,113,.15);color:#f87171;padding:1px 8px;border-radius:20px;">HTML</span>
+              <span style="background:rgba(56,189,248,.15);color:var(--blue);padding:1px 8px;border-radius:20px;">CSS</span>
+              <span style="background:rgba(108,117,125,.2);color:#adb5bd;padding:1px 8px;border-radius:20px;">Bootstrap</span>
+              <span style="background:rgba(245,158,11,.15);color:var(--orange);padding:1px 8px;border-radius:20px;">JavaScript</span>
+              <span style="background:rgba(52,211,153,.15);color:var(--green);padding:1px 8px;border-radius:20px;">Gemini</span>
+              <span style="background:rgba(167,139,250,.15);color:var(--purple);padding:1px 8px;border-radius:20px;">Claude Sonnet 4.6</span>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+          <i class="bi bi-cpu accent-purple" style="font-size:18px;"></i>
+          <div>
+            <div style="font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;">AI 使用率</div>
+            <div style="font-size:20px;font-weight:900;color:var(--purple);">80%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-badges" style="margin-top:14px;">
+        <span class="tag-pill accent-orange"><i class="bi bi-filetype-html"></i> HTML 標籤教學</span>
+        <span class="tag-pill accent-blue"><i class="bi bi-palette"></i> CSS 風格實驗室</span>
+        <span class="tag-pill accent-green"><i class="bi bi-code-slash"></i> JS 邏輯實驗室</span>
+        <span class="tag-pill"><i class="bi bi-layers"></i> 26 個 JS 課程主題</span>
+        <span class="tag-pill"><i class="bi bi-eye"></i> 即時預覽 &amp; 執行</span>
+      </div>
+    </div>
+    <!-- ══════════════════════════════════════════
+         Slide 1 · 製作動機
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-1">
+      <div class="bg-blob" style="width:340px;height:340px;background:rgba(245,158,11,.1);top:-80px;right:-60px;"></div>
+      <div class="slide-label">Motivation</div>
+      <div class="slide-title" style="font-size:32px;">為什麼要<span class="accent-orange">做這個？</span></div>
+      <div class="divider" style="background:linear-gradient(90deg,var(--orange),var(--blue));"></div>
+      <div class="two-col" style="margin-top:14px;gap:24px;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="info-card" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--orange);padding:18px 20px;">
+            <div class="card-title" style="color:var(--orange);margin-bottom:6px;"><i class="bi bi-emoji-frown"></i> &nbsp;現有資源的痛點</div>
+            <div class="card-desc" style="line-height:1.75;">看文件讀到懂，但手邊沒有地方快速試。MDN 太詳盡，教學影片太慢，想要一個<strong style="color:#fff;">「看到就能改、改了就能看」</strong>的環境。</div>
+          </div>
+          <div class="info-card" style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-left:4px solid var(--blue);padding:18px 20px;">
+            <div class="card-title" style="color:var(--blue);margin-bottom:6px;"><i class="bi bi-lightbulb"></i> &nbsp;核心想法</div>
+            <div class="card-desc" style="line-height:1.75;">把常用的 HTML、CSS、JavaScript 語法整理成<strong style="color:#fff;">可以互動的小範例</strong>，每次練習都有即時視覺回饋，降低「看懂但不會用」的落差。</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="info-card" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-left:4px solid var(--green);padding:18px 20px;">
+            <div class="card-title" style="color:var(--green);margin-bottom:6px;"><i class="bi bi-person-check"></i> &nbsp;目標使用者</div>
+            <div class="card-desc" style="line-height:1.75;">剛入門前端、想要一個<strong style="color:#fff;">不必搭環境</strong>就能練習的人——打開瀏覽器就是沙盒，隨時可以改程式碼。</div>
+          </div>
+          <div class="info-card" style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-left:4px solid var(--purple);padding:18px 20px;">
+            <div class="card-title" style="color:var(--purple);margin-bottom:6px;"><i class="bi bi-robot"></i> &nbsp;AI 協作實驗</div>
+            <div class="card-desc" style="line-height:1.75;">同步探索<strong style="color:#fff;">人 × AI 協作開發</strong>的可能性——80% 程式碼透過 Gemini／Claude 輔助生成，親身驗證 AI 輔助開發的效率邊界。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 2 · 遇到的難題
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-2">
+      <div class="bg-blob" style="width:300px;height:300px;background:rgba(248,113,113,.08);top:-60px;right:-40px;"></div>
+      <div class="slide-label">Challenges</div>
+      <div class="slide-title" style="font-size:32px;">製作途中的<span class="accent-red">難題</span></div>
+      <div class="divider" style="background:linear-gradient(90deg,var(--red),var(--purple));"></div>
+      <div class="card-grid col-3" style="margin-top:12px;gap:14px;">
+        <div style="background:var(--card);border:1px solid rgba(248,113,113,.2);border-top:3px solid var(--red);border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">🔒</div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:6px;">沙盒安全限制</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">使用者輸入的程式碼直接執行，需要隔離 DOM 副作用、清除計時器與事件監聽，避免多次執行互相干擾。</div>
+        </div>
+        <div style="background:var(--card);border:1px solid rgba(167,139,250,.2);border-top:3px solid var(--purple);border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">🔄</div>
+          <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:6px;">狀態清除問題</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">切換課程後上一題的 setTimeout / setInterval 仍在背景跑，需追蹤所有 ID 並在 clearRuntime() 中統一清除。</div>
+        </div>
+        <div style="background:var(--card);border:1px solid rgba(245,158,11,.2);border-top:3px solid var(--orange);border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">📐</div>
+          <div style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:6px;">版面一致性</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">三個模組（HTML / CSS / JS）各自獨立 HTML 檔，要維持統一的視覺語言和交互體驗需要反覆對齊。</div>
+        </div>
+        <div style="background:var(--card);border:1px solid rgba(56,189,248,.2);border-top:3px solid var(--blue);border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">🤖</div>
+          <div style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:6px;">AI 生成程式碼的審核</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">AI 給的程式碼常有命名不一致或邏輯漏洞，每段都需要自己讀懂並修正，否則執行沙盒會直接報錯。</div>
+        </div>
+        <div style="background:var(--card);border:1px solid rgba(52,211,153,.2);border-top:3px solid var(--green);border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">⚡</div>
+          <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:6px;">26 課程的擴充設計</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">從最初 5 個範例擴充到 26 個課程，要讓資料結構可擴展、UI 不改動的情況下直接新增，需要統一的 jsLessons 物件格式。</div>
+        </div>
+        <div style="background:var(--card);border:1px solid rgba(167,139,250,.15);border-top:3px solid #c4b5fd;border-radius:12px;padding:20px;">
+          <div style="font-size:22px;margin-bottom:8px;">🎨</div>
+          <div style="font-size:14px;font-weight:700;color:#c4b5fd;margin-bottom:6px;">CSS 即時預覽同步</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.7;">CSS 實驗室需要讓滑桿、色票、下拉選單即時反映到預覽區，事件監聽的掛載時機和 DOM 更新順序需要精確控制。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 3 · 目錄
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-3">
+      <div class="slide-label">Table of Contents</div>
+      <div class="slide-title" style="font-size:32px;">本次簡報內容</div>
+      <div class="divider" style="background:var(--blue);"></div>
+      <div class="card-grid col-3" style="margin-top:8px;">
+        <div class="toc-card">
+          <div class="toc-num accent-orange">01</div>
+          <div class="toc-info">
+            <div class="toc-name">製作動機</div>
+            <div class="toc-sub">為什麼要做這個？</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num accent-red">02</div>
+          <div class="toc-info">
+            <div class="toc-name">遇到的難題</div>
+            <div class="toc-sub">六大製作挑戰</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num accent-blue">03</div>
+          <div class="toc-info">
+            <div class="toc-name">專案概覽</div>
+            <div class="toc-sub">平台架構與使用方式</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num accent-purple">04</div>
+          <div class="toc-info">
+            <div class="toc-name">HTML 教學工具</div>
+            <div class="toc-sub">常用標籤分類索引</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num accent-green">05</div>
+          <div class="toc-info">
+            <div class="toc-name">CSS 風格實驗室</div>
+            <div class="toc-sub">屬性即時預覽</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num" style="color:var(--blue)">06</div>
+          <div class="toc-info">
+            <div class="toc-name">JS 邏輯實驗室</div>
+            <div class="toc-sub">可執行範例學習</div>
+          </div>
+        </div>
+        <div class="toc-card">
+          <div class="toc-num accent-orange">07</div>
+          <div class="toc-info">
+            <div class="toc-name">開發時間表</div>
+            <div class="toc-sub">4/20 — 4/27 製作歷程</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 4 · 專案概覽
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-4">
+      <div class="bg-blob" style="width:320px;height:320px;background:rgba(245,158,11,.08);top:-80px;right:-60px;"></div>
+      <div class="slide-label">Project Overview</div>
+      <div class="slide-title" style="font-size:32px;">這個平台在做什麼？</div>
+      <div class="divider" style="background:var(--orange);"></div>
+      <div class="two-col" style="margin-top:8px;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="feature-row">
+            <div class="feature-icon bg-orange" style="color:var(--orange)"><i class="bi bi-layout-three-columns"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">三欄式學習介面</div>
+              <div class="ft-desc">左側選主題、中間看觀念解說、右側直接執行範例</div>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon bg-green" style="color:var(--green)"><i class="bi bi-play-circle"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">即時執行 &amp; 預覽</div>
+              <div class="ft-desc">程式碼直接在瀏覽器執行，沙盒環境不影響頁面</div>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon bg-blue" style="color:var(--blue)"><i class="bi bi-search"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">關鍵字搜尋課程</div>
+              <div class="ft-desc">輸入 DOM、事件、陣列等關鍵字即時篩選主題</div>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon bg-purple" style="color:var(--purple)"><i class="bi bi-terminal"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">內建 Console 輸出</div>
+              <div class="ft-desc">log、warn、error 直接顯示在頁面，無需開發工具</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;flex:1;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:1px;text-transform:uppercase;">核心數據</div>
+            <div class="stat-row" style="justify-content:space-around;">
+              <div class="stat-box">
+                <div class="stat-num accent-orange">3</div>
+                <div class="stat-lbl">學習模組</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-num accent-green">26</div>
+                <div class="stat-lbl">JS 課程主題</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-num accent-blue">18</div>
+                <div class="stat-lbl">專案檔案</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:8px;">學習流程</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);">
+              <span style="background:rgba(245,158,11,.15);color:var(--orange);padding:3px 10px;border-radius:20px;">選主題</span>
+              <i class="bi bi-arrow-right"></i>
+              <span style="background:rgba(56,189,248,.15);color:var(--blue);padding:3px 10px;border-radius:20px;">看觀念</span>
+              <i class="bi bi-arrow-right"></i>
+              <span style="background:rgba(52,211,153,.15);color:var(--green);padding:3px 10px;border-radius:20px;">執行範例</span>
+              <i class="bi bi-arrow-right"></i>
+              <span style="background:rgba(167,139,250,.15);color:var(--purple);padding:3px 10px;border-radius:20px;">改寫實驗</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 5 · HTML 教學工具介紹
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-5">
+      <div class="bg-blob" style="width:300px;height:300px;background:rgba(248,113,113,.1);top:-80px;right:-40px;"></div>
+      <div class="slide-label">Module 01 · HTML</div>
+      <div class="slide-title" style="font-size:30px;"><span style="color:#f87171;">HTML</span> 常用標籤教學工具</div>
+      <div class="divider" style="background:var(--red);"></div>
+      <div class="slide-label">Module 01 · HTML</div>
+      <div class="slide-title" style="font-size:30px;"><span style="color:#f87171;">HTML</span> 常用標籤教學工具</div>
+      <div class="divider" style="background:var(--red);"></div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:4px;">
+            以分類索引整理最常用的 HTML 標籤，每個標籤包含語意說明、類比、解剖、樣式範例與 JS 連結，讓使用者直接修改範例程式碼並即時預覽結果。
+          </p>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">標籤分類</div>
+          <div class="card-grid col-2" style="gap:10px;">
+            <div class="info-card bg-red border-orange" style="padding:14px;">
+              <div class="card-title accent-red"><i class="bi bi-file-code"></i> 文件基礎</div>
+              <div class="card-desc">html, head, body, title, meta, link, script</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-title accent-orange"><i class="bi bi-layout-sidebar"></i> 版面語意</div>
+              <div class="card-desc">header, nav, main, section, article, aside, footer, div</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-title accent-blue"><i class="bi bi-type"></i> 文字排版</div>
+              <div class="card-desc">h1~h6, p, span, a, strong, em, blockquote</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-title accent-green"><i class="bi bi-ui-checks"></i> 表單互動</div>
+              <div class="card-desc">form, input, button, select, textarea, label</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">每個標籤包含的內容</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="lesson-item">
+              <span class="l-badge badge-basic">語意</span>
+              <span class="l-desc">標籤的正確使用場景與語意說明</span>
+            </div>
+            <div class="lesson-item">
+              <span class="l-badge badge-mid">類比</span>
+              <span class="l-desc">用生活比喻幫助理解抽象概念</span>
+            </div>
+            <div class="lesson-item">
+              <span class="l-badge badge-midhi">解剖</span>
+              <span class="l-desc">語法組成與各部分作用說明</span>
+            </div>
+            <div class="lesson-item">
+              <span class="l-badge badge-adv">即時預覽</span>
+              <span class="l-desc">直接修改範例程式並觀察渲染結果</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 6 · CSS 實驗室介紹
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-6">
+      <div class="bg-blob" style="width:340px;height:340px;background:rgba(56,189,248,.1);top:-100px;right:-60px;"></div>
+      <div class="slide-label">Module 02 · CSS</div>
+      <div class="slide-title" style="font-size:30px;"><span class="accent-blue">CSS</span> 深度風格實驗室</div>
+      <div class="divider" style="background:var(--blue);"></div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <p style="font-size:13.5px;color:var(--muted);line-height:1.7;">
+            保留藍綠色系與流體感，左側挑主題、中間看拆解、右側直接改樣式並即時觀察效果。每個主題都有屬性解析、美學說明與可互動的預覽視窗。
+          </p>
+          <div class="card-grid col-2" style="gap:10px;">
+            <div class="info-card bg-blue border-blue" style="padding:14px;">
+              <div class="card-icon accent-blue"><i class="bi bi-box"></i></div>
+              <div class="card-title">Box Model · 盒子模型</div>
+              <div class="card-desc">Padding / Border / Margin / box-sizing</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-icon accent-green"><i class="bi bi-layout-three-columns"></i></div>
+              <div class="card-title">Flexbox · 彈性佈局</div>
+              <div class="card-desc">justify-content / align-items / gap</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-icon accent-purple"><i class="bi bi-snow3"></i></div>
+              <div class="card-title">Glassmorphism · 玻璃擬態</div>
+              <div class="card-desc">rgba / backdrop-filter / box-shadow</div>
+            </div>
+            <div class="info-card" style="padding:14px;">
+              <div class="card-icon accent-orange"><i class="bi bi-stars"></i></div>
+              <div class="card-title">Shadows · 光影空間</div>
+              <div class="card-desc">blur / spread / RGBA / 多層陰影</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">實驗室特色</div>
+          <div class="feature-row">
+            <div class="feature-icon bg-blue" style="color:var(--blue)"><i class="bi bi-eye"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">即時 CSS 預覽視窗</div>
+              <div class="ft-desc">修改屬性值後，左側方塊立刻反映變化</div>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon bg-green" style="color:var(--green)"><i class="bi bi-pencil-square"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">可直接編輯的程式碼區</div>
+              <div class="ft-desc">每個主題提供預設樣式碼，直接修改就能看效果</div>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-icon bg-orange" style="color:var(--orange)"><i class="bi bi-lightbulb"></i></div>
+            <div class="feature-text">
+              <div class="ft-title">設計原理 &amp; 美學說明</div>
+              <div class="ft-desc">每個屬性都附上「為什麼這樣做」的解說</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 7 · JS 邏輯實驗室介紹
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-7">
+      <div class="bg-blob" style="width:350px;height:350px;background:rgba(52,211,153,.1);top:-100px;right:-60px;"></div>
+      <div class="slide-label">Module 03 · JavaScript</div>
+      <div class="slide-title" style="font-size:30px;"><span class="accent-green">JS</span> 邏輯實驗室</div>
+      <div class="divider" style="background:var(--green);"></div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <p style="font-size:13.5px;color:var(--muted);line-height:1.7;">
+            延續 HTML 教學頁的版面規格，保留 JavaScript 頁面的暖橘互動感與編輯器氛圍。左側挑主題，中間看觀念，右側直接執行範例與觀察狀態變化。
+          </p>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">實驗室功能</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="lesson-item">
+              <i class="bi bi-code-slash accent-green" style="font-size:15px;"></i>
+              <span class="l-title">可直接編輯的程式碼區</span>
+              <span class="l-desc">Ctrl+Enter 快捷鍵執行</span>
+            </div>
+            <div class="lesson-item">
+              <i class="bi bi-play-circle accent-orange" style="font-size:15px;"></i>
+              <span class="l-title">互動預覽區</span>
+              <span class="l-desc">按鈕、輸入框、列表、進度條等元件</span>
+            </div>
+            <div class="lesson-item">
+              <i class="bi bi-terminal accent-blue" style="font-size:15px;"></i>
+              <span class="l-title">內建 Console</span>
+              <span class="l-desc">log / warn / error 沙盒輸出</span>
+            </div>
+            <div class="lesson-item">
+              <i class="bi bi-arrow-counterclockwise accent-purple" style="font-size:15px;"></i>
+              <span class="l-title">環境重置</span>
+              <span class="l-desc">一鍵還原預覽區所有狀態</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px;">沙盒執行機制</div>
+          <div class="code-block">
+<span class="kw">function</span> <span class="fn">runJS</span>() {
+  <span class="cm">// 用 new Function 建立隔離沙盒</span>
+  <span class="kw">const</span> execute = <span class="kw">new</span> <span class="fn">Function</span>(
+    <span class="str">'console'</span>, <span class="str">'helpers'</span>, code
+  );
+  <span class="fn">execute</span>(sandboxConsole, <span class="fn">createHelpers</span>());
+
+  <span class="cm">// 自動清理 timeout / 事件</span>
+  <span class="fn">clearRuntime</span>();
+}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6;">
+            每次執行前自動清除前一次的 setTimeout、setInterval 與 addEventListener，確保範例不互相干擾。
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" id="slide-8">
+      <div class="bg-blob" style="width:320px;height:320px;background:rgba(245,158,11,.1);top:-80px;right:-60px;"></div>
+      <div class="slide-label">Development Timeline</div>
+      <div class="slide-title" style="font-size:30px;">開發<span class="accent-orange">時間表</span></div>
+      <div class="divider" style="background:linear-gradient(90deg,var(--orange),var(--blue));"></div>
+
+      <!-- 2×2 卡片網格時間表 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:18px;flex:1;margin-top:10px;">
+
+        <!-- 4/20–21 -->
+        <div style="background:var(--card);border:1px solid rgba(245,158,11,.25);border-top:4px solid var(--orange);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-lightbulb" style="color:var(--orange);font-size:16px;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--orange);font-weight:700;letter-spacing:1px;">4 / 20 &ndash; 21</div>
+              <div style="font-size:17px;font-weight:800;margin-top:1px;">專案發想</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;padding-left:2px;">確立「前端練習器」主題，規劃三大模組：HTML 標籤教學、CSS 風格實驗室、JS 邏輯實驗室</div>
+        </div>
+
+        <!-- 4/22–23 -->
+        <div style="background:var(--card);border:1px solid rgba(56,189,248,.25);border-top:4px solid var(--blue);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-laptop" style="color:var(--blue);font-size:16px;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--blue);font-weight:700;letter-spacing:1px;">4 / 22 &ndash; 23</div>
+              <div style="font-size:17px;font-weight:800;margin-top:1px;">首頁製作、調整</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;padding-left:2px;">完成 index1.html 入口頁面，整合三個圖示入口，製作星空背景動畫與互動說明彈窗</div>
+        </div>
+
+        <!-- 4/24 -->
+        <div style="background:var(--card);border:1px solid rgba(52,211,153,.25);border-top:4px solid var(--green);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(52,211,153,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-tools" style="color:var(--green);font-size:16px;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--green);font-weight:700;letter-spacing:1px;">4 / 24</div>
+              <div style="font-size:17px;font-weight:800;margin-top:1px;">功能調整</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;padding-left:2px;">三大模組功能細化：JS 沙盒執行機制、CSS 即時預覽視窗、HTML 標籤分類索引完善</div>
+        </div>
+
+        <!-- 4/27 -->
+        <div style="background:var(--card);border:1px solid rgba(167,139,250,.25);border-top:4px solid var(--purple);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(167,139,250,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-check2-circle" style="color:var(--purple);font-size:16px;"></i>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--purple);font-weight:700;letter-spacing:1px;">4 / 27</div>
+              <div style="font-size:17px;font-weight:800;margin-top:1px;">檔案確定、製作 PPT</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.65;padding-left:2px;">git pull 同步最終版本，完成 presentation.html 簡報製作並提交成果</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Slide 9 · 結語
+    ══════════════════════════════════════════ -->
+    <div class="slide" id="slide-9">
+      <div class="bg-blob" style="width:380px;height:380px;background:rgba(245,158,11,.1);top:-100px;right:-80px;"></div>
+      <div class="bg-blob" style="width:260px;height:260px;background:rgba(56,189,248,.08);bottom:-60px;left:-40px;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;">
+        <div>
+          <div class="slide-label">Summary</div>
+          <div class="slide-title">從看到懂，<br>從懂到<span class="accent-orange">自己動手做</span></div>
+          <div class="divider" style="background:linear-gradient(90deg,var(--orange),var(--blue),var(--green));width:80px;"></div>
+          <div class="slide-subtitle" style="margin-top:12px;">
+            這套平台的核心理念是「讓學習有感」。<br>
+            每個觀念都連著可以執行的程式碼，每次改動都有即時的視覺回饋。
+          </div>
+        </div>
+        <div class="card-grid col-3" style="gap:12px;">
+          <div class="info-card bg-red" style="padding:16px;text-align:center;border-top:3px solid var(--red);">
+            <div style="font-size:30px;margin-bottom:6px;">🏷️</div>
+            <div class="card-title accent-red">HTML</div>
+            <div class="card-desc">語意結構<br>標籤分類索引</div>
+          </div>
+          <div class="info-card bg-blue" style="padding:16px;text-align:center;border-top:3px solid var(--blue);">
+            <div style="font-size:30px;margin-bottom:6px;">🎨</div>
+            <div class="card-title accent-blue">CSS</div>
+            <div class="card-desc">視覺設計<br>即時樣式實驗</div>
+          </div>
+          <div class="info-card bg-green" style="padding:16px;text-align:center;border-top:3px solid var(--green);">
+            <div style="font-size:30px;margin-bottom:6px;">⚡</div>
+            <div class="card-title accent-green">JavaScript</div>
+            <div class="card-desc">邏輯互動<br>26 個可執行課程</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <span class="tag-pill"><i class="bi bi-github"></i> firstTest</span>
+          <span class="tag-pill accent-orange"><i class="bi bi-lightning-charge"></i> 前端邏輯實驗室</span>
+          <span class="tag-pill accent-blue"><i class="bi bi-mortarboard"></i> 學以致用，動手改寫</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slide-viewport -->
+
+  <!-- 控制列 -->
+  <div class="slide-bar">
+    <span class="slide-counter" id="counter">1 / 10</span>
+    <div class="nav-btns">
+      <button class="nav-btn" id="btn-prev" title="上一張 (←)" disabled><i class="bi bi-chevron-left"></i></button>
+      <button class="nav-btn" id="btn-next" title="下一張 (→)"><i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
+
+</div><!-- /deck-shell -->
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let current  = 0;
+
+  const btnPrev  = document.getElementById('btn-prev');
+  const btnNext  = document.getElementById('btn-next');
+  const counter  = document.getElementById('counter');
+  const progress = document.getElementById('progress-fill');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit-left');
+    setTimeout(() => slides[current < index ? current : index].classList.remove('exit-left'), 420);
+
+    current = index;
+    slides[current].classList.add('active');
+
+    counter.textContent  = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  // 初始化進度條
+  goTo(0);
+</script>
+</body>
+</html>
