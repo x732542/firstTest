@@ -1,16 +1,16 @@
 :root {
-    --primary: #1768ac;
+    --primary: #e34c26;
     --accent: #ffd166;
     --surface: #ffffff;
-    --surface-soft: #f5f7fb;
-    --border: #d6deeb;
+    --surface-soft: #fdf6f3;
+    --border: #f0d8d0;
     --text: #1f2a37;
     --muted: #5f6b7a;
 }
 
 body {
     margin: 0;
-    background: linear-gradient(180deg, #eef4fb 0%, #f8fafc 100%);
+    background: linear-gradient(180deg, #fdf0ec 0%, #f8fafc 100%);
     color: var(--text);
     font-family: "Microsoft JhengHei", sans-serif;
 }
@@ -33,9 +33,9 @@ body {
     margin-bottom: 20px;
     padding: 24px 28px;
     border-radius: 28px;
-    background: linear-gradient(135deg, #1768ac, #4ea5d9);
+    background: linear-gradient(135deg, #e34c26, #f07850);
     color: #fff;
-    box-shadow: 0 14px 32px rgba(23, 104, 172, 0.25);
+    box-shadow: 0 14px 32px rgba(227, 76, 38, 0.25);
 }
 
 .hero p {
